@@ -696,44 +696,75 @@ function startCountdown() {
 
 /* ─── MIDNIGHT REVEAL ─── */
 function triggerMidnight() {
-  document.getElementById('midnight-burst').classList.add('flash');
+  const burst = document.getElementById('midnight-burst');
+  if (burst) burst.classList.add('flash');
   setTimeout(() => {
-    document.getElementById('curtain-left').classList.add('open');
-    document.getElementById('curtain-right').classList.add('open');
-    document.getElementById('countdown-wrap').classList.add('hidden');
+    const cl = document.getElementById('curtain-left');
+    const cr = document.getElementById('curtain-right');
+    const cw = document.getElementById('countdown-wrap');
+    if (cl) cl.classList.add('open');
+    if (cr) cr.classList.add('open');
+    if (cw) cw.classList.add('hidden');
   }, 400);
   setTimeout(() => {
-    document.getElementById('quiz-screen').classList.add('show');
+    const qs = document.getElementById('quiz-screen');
+    if (qs) qs.classList.add('show');
   }, 1000);
+
+  // Performance Optimization: Unload heavy curtain and background particle layers once off-screen
+  setTimeout(() => {
+    const cl = document.getElementById('curtain-left');
+    const cr = document.getElementById('curtain-right');
+    const cw = document.getElementById('countdown-wrap');
+    const burstEl = document.getElementById('midnight-burst');
+    const bgAmb = document.getElementById('bg-ambient');
+    if (cl) cl.style.display = 'none';
+    if (cr) cr.style.display = 'none';
+    if (cw) cw.style.display = 'none';
+    if (burstEl) burstEl.style.display = 'none';
+    if (bgAmb) bgAmb.style.display = 'none';
+  }, 2600);
 }
 
-/* ─── CONFETTI SYSTEM ─── */
+/* ─── CONFETTI SYSTEM (OPTIMIZED & LEAK-FREE) ─── */
 function launchConfetti() {
+  const isMobile = window.innerWidth <= 768;
+  const count = isMobile ? 35 : 65;
   const colors = ['#ff6b9d','#ffd700','#ff4db8','#00bcd4','#69f0ae','#ff5722'];
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < count; i++) {
     const c = document.createElement('div');
     c.className = 'confetti-piece';
-    const sz = Math.random() * 10 + 7;
-    c.style.cssText = `left:${Math.random()*100}%;top:-20px;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'3px'};--cf-d:${Math.random()*3+2}s;--cf-delay:${Math.random()*2}s;`;
+    const sz = Math.random() * (isMobile ? 6 : 8) + 6;
+    const dur = Math.random() * 2 + 2;
+    const delay = Math.random() * 1.2;
+    c.style.cssText = `left:${Math.random()*100}%;top:-20px;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'3px'};--cf-d:${dur}s;--cf-delay:${delay}s;will-change:transform,opacity;`;
     document.body.appendChild(c);
+
+    // Automatically remove element from DOM after animation completes to avoid memory leak & lag
+    setTimeout(() => {
+      c.remove();
+    }, (dur + delay + 0.3) * 1000);
   }
 }
 
-/* ─── MOUSE TRAIL HEARTS ─── */
+/* ─── MOUSE TRAIL HEARTS (DESKTOP ONLY) ─── */
 let lastTrail = 0;
-document.addEventListener('mousemove', e => {
-  const now = Date.now();
-  if (now - lastTrail < 120 || !document.getElementById('curtain-left').classList.contains('open')) return;
-  lastTrail = now;
-  const em = ['💖','💗','💕','✨','🌸'];
-  const h = document.createElement('div');
-  h.className = 'trail-heart';
-  h.textContent = em[Math.floor(Math.random() * em.length)];
-  h.style.left = (e.clientX - 10) + 'px';
-  h.style.top = (e.clientY - 10) + 'px';
-  document.body.appendChild(h);
-  setTimeout(() => h.remove(), 800);
-});
+if (window.matchMedia('(pointer: fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    const now = Date.now();
+    const cl = document.getElementById('curtain-left');
+    if (now - lastTrail < 140 || !cl || !cl.classList.contains('open')) return;
+    lastTrail = now;
+    const em = ['💖','💗','💕','✨','🌸'];
+    const h = document.createElement('div');
+    h.className = 'trail-heart';
+    h.textContent = em[Math.floor(Math.random() * em.length)];
+    h.style.left = (e.clientX - 10) + 'px';
+    h.style.top = (e.clientY - 10) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 700);
+  });
+}
 
 /* ─── START ON LOAD ─── */
 startCountdown();
