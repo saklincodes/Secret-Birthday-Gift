@@ -278,26 +278,23 @@ function handleChoice(choice) {
 }
 
 function handleExcitedChoice() {
-  launchConfetti();
   const surpriseEl = document.getElementById('surprise-screen');
   const giftEl = document.getElementById('gift-screen');
 
-  setTimeout(() => {
-    if (surpriseEl) {
-      surpriseEl.classList.remove('show-screen');
-      surpriseEl.classList.add('hidden-screen');
-    }
-    if (giftEl) {
-      giftEl.classList.remove('hidden-screen');
-      giftEl.classList.add('show-screen');
-      launchConfetti();
-    }
-  }, 400);
+  if (surpriseEl) {
+    surpriseEl.classList.remove('show-screen');
+    surpriseEl.classList.add('hidden-screen');
+  }
+  if (giftEl) {
+    giftEl.classList.remove('hidden-screen');
+    giftEl.classList.add('show-screen');
+  }
+  // Light celebration confetti burst once new screen transition settles
+  setTimeout(launchConfetti, 300);
 }
 
 /* ─── CLOTHESLINE HANGING MEMORIES GALLERY (MATCHING REFERENCE IMAGE 2) ─── */
 function openMemoriesModal() {
-  launchConfetti();
   const modal = document.getElementById('memories-modal');
   if (modal) {
     modal.classList.remove('hidden');
@@ -305,7 +302,7 @@ function openMemoriesModal() {
     if (container) {
       container.style.animation = 'none';
       void container.offsetWidth;
-      container.style.animation = 'clotheslineDropIn 0.55s cubic-bezier(0.34, 1.35, 0.64, 1)';
+      container.style.animation = 'clotheslineDropIn 0.45s cubic-bezier(0.34, 1.35, 0.64, 1)';
     }
     const track = document.getElementById('clothesline-photos-track');
     if (track) {
@@ -331,11 +328,10 @@ function scrollClothesline(direction) {
 
 function focusHangingPhoto(el) {
   if (!el) return;
-  launchConfetti();
   el.classList.add('active-sway');
   setTimeout(() => {
     el.classList.remove('active-sway');
-  }, 1200);
+  }, 1000);
 }
 
 /* ─── MAKE A WISH: BIRTHDAY CAKE (BOX 2) ─── */
@@ -343,7 +339,6 @@ let isWishMade = false;
 let blownCandlesCount = 0;
 
 function openCakeModal() {
-  launchConfetti();
   resetCake();
   const modal = document.getElementById('cake-modal');
   if (modal) modal.classList.remove('hidden');
@@ -564,7 +559,7 @@ function startLetterTypewriter() {
       }
 
       // Natural emotional cadence (pause at punctuation/emojis)
-      const delay = (ch === '.' || ch === '!' || ch === '?' || ch === '💖') ? 110 : (ch === ',' ? 50 : 16);
+      const delay = (ch === '.' || ch === '!' || ch === '?' || ch === '💖') ? 110 : (ch === ',' ? 50 : 25);
       letterTypewriterTimer = setTimeout(typeNextChar, delay);
     } else {
       secIndex++;
@@ -578,7 +573,6 @@ function startLetterTypewriter() {
 }
 
 function openLetterModal() {
-  launchConfetti();
   const modal = document.getElementById('letter-modal');
   if (modal) {
     modal.classList.remove('hidden');

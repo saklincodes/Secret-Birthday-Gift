@@ -788,15 +788,30 @@ html, body {
 /* Mystery Gift Reveal Modal Popup */
 .gift-modal {
   position: fixed; inset: 0; z-index: 120;
-  background: rgba(40, 5, 18, 0.58);
-  backdrop-filter: blur(8px);
+  background: rgba(28, 4, 14, 0.85);
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
   opacity: 1; pointer-events: auto;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 .gift-modal.hidden {
   opacity: 0; pointer-events: none;
+}
+
+/* Pause background animations when any modal is open to free 100% GPU */
+body:has(#memories-modal:not(.hidden)) .mystery-box-item,
+body:has(#cake-modal:not(.hidden)) .mystery-box-item,
+body:has(#letter-modal:not(.hidden)) .mystery-box-item,
+body:has(#gift-modal:not(.hidden)) .mystery-box-item,
+body:has(#memories-modal:not(.hidden)) .mystery-shinchan-frame,
+body:has(#cake-modal:not(.hidden)) .mystery-shinchan-frame,
+body:has(#letter-modal:not(.hidden)) .mystery-shinchan-frame,
+body:has(#gift-modal:not(.hidden)) .mystery-shinchan-frame,
+body:has(#memories-modal:not(.hidden)) .gift-bg-star,
+body:has(#cake-modal:not(.hidden)) .gift-bg-star,
+body:has(#letter-modal:not(.hidden)) .gift-bg-star,
+body:has(#gift-modal:not(.hidden)) .gift-bg-star {
+  animation-play-state: paused !important;
 }
 
 /* ─── CLOTHESLINE HANGING MEMORIES GALLERY (MATCHING REFERENCE IMAGE 2) ─── */
@@ -1757,7 +1772,7 @@ html, body {
     height: 4px;
   }
 
-  /* 4. Mystery Gift Boxes Screen on Mobile */
+  /* 4. Mystery Gift Boxes Screen on Mobile (GPU Optimized) */
   .gift-stage {
     padding: 12px 10px 14px;
     justify-content: space-evenly;
@@ -1771,14 +1786,38 @@ html, body {
   .mystery-box-item {
     flex: 0 1 100px;
     max-width: 105px;
+    will-change: transform;
   }
   .heart-box-svg {
     max-height: 95px;
+    filter: none !important;
+  }
+  .box-rays line {
+    animation: none !important;
+    opacity: 0.65 !important;
+  }
+  .box-bow path,
+  .box-bow circle {
+    filter: none !important;
+  }
+  @keyframes floatBox1 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+  }
+  @keyframes floatBox2 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+  }
+  @keyframes floatBox3 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-7px); }
   }
   .mystery-shinchan-frame {
     margin: 4px auto;
     padding: 6px 12px 0;
     border-radius: 22px;
+    animation: none !important;
+    box-shadow: 0 8px 20px rgba(216, 27, 96, 0.22);
   }
   .shinchan-cameo-inner {
     width: clamp(160px, 50vw, 210px);
@@ -1794,13 +1833,18 @@ html, body {
     font-size: 1.1rem;
   }
 
-  /* 5. Mobile Clothesline Memories Modal */
+  /* 5. Mobile Clothesline Memories Modal (Zero Lag) */
   .memories-board-container {
     width: 98vw;
     height: 92vh;
     height: 92dvh;
     max-height: none;
     padding: 16px 10px 12px;
+    will-change: transform, opacity;
+  }
+  .wire-bulb circle {
+    filter: none !important;
+    animation: none !important;
   }
   .clothesline-photos-track {
     padding: 25px 12px 10px;
@@ -1817,11 +1861,15 @@ html, body {
     display: none;
   }
 
-  /* 6. Mobile Cake Modal */
+  /* 6. Mobile Cake Modal (Zero Lag) */
   .cake-card-container {
     width: 96vw;
     padding: 14px 10px 12px;
     border-radius: 24px;
+    will-change: transform, opacity;
+  }
+  .flame-wrap {
+    filter: none !important;
   }
   .cake-interactive-stage {
     max-width: 100%;
@@ -1843,7 +1891,7 @@ html, body {
     justify-content: center;
   }
 
-  /* 7. Mobile Letter Modal */
+  /* 7. Mobile Letter Modal (Zero Lag) */
   .letter-card-container {
     flex-direction: column;
     max-height: 92vh;
@@ -1852,6 +1900,7 @@ html, body {
     -webkit-overflow-scrolling: touch;
     gap: 16px;
     padding: 56px 16px 24px;
+    will-change: transform, opacity;
   }
   .letter-photo-inner {
     width: clamp(160px, 50vw, 220px);
